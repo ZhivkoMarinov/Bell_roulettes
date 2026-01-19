@@ -63,7 +63,8 @@ void playRound(){
   else {
     sendError(PSF);
   }
-  roundCounter++; 
+  roundCounter++;
+  singleDelay(nextRoundAwaitTime); 
 }
 
 void sendEvent(String event, int result) {
@@ -181,8 +182,8 @@ void retrieveBall(wheel *wheelControl){
 
 void shuffleWheel(wheel *wheelControl){
   long shuffleDuration = randomTime(minShuffleTime, maxShuffleTime) * shuffleTimeMultiplier;
-  Serial.print("Shuffle randTime: ");
-  Serial.println(shuffleDuration);
+  //Serial.print("Shuffle randTime: ");
+  //Serial.println(shuffleDuration);
   if (wheelControl->isWheelRotating){
     digitalWrite(motorFast, HIGH);
     singleDelay(shuffleDuration);
@@ -220,8 +221,8 @@ int isBall(){
 
 void fireBall(wheel *wheelControl, gameRound *gameRound) {
   int fireBallDuration = (randomTime(fireBallMinTime, fireBallMaxTime) * 10) + fireBallCompressorTime;
-  Serial.print("Fire randTime: ");
-  Serial.println(fireBallDuration);
+  //Serial.print("Fire randTime: ");
+  //Serial.println(fireBallDuration);
   const unsigned long current_time = millis();
   while (current_time + fireBallDuration > millis()) {
     digitalWrite(ballFan, HIGH);
@@ -268,11 +269,12 @@ void readNumber(gameRound *gameRound, unsigned long currentTime){
       gameRound->wheelSectorCounter = 36;
     }
     if (gameRound->ballLightCount >= 17){
+      /*
       Serial.print("Sector: ");
       Serial.println(gameRound->wheelSectorCounter);
       Serial.print("Light: ");
       Serial.println(gameRound->ballLightCount);
-      
+      */
       gameRound->winningNumber = numbersArray[gameRound->wheelSectorCounter];
       successfulRead = true;
       if(gameRound->lastReadNumber == -1){

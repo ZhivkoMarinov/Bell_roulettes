@@ -20,6 +20,8 @@ void setup() {
   pinMode(ballSensor, INPUT_PULLUP);
   pinMode(retrieveSensor, INPUT_PULLUP);
 
+  pinMode(8, OUTPUT);
+  digitalWrite(8, LOW);
   pinMode(motorRotate, OUTPUT);
   pinMode(motorFast, OUTPUT);
   pinMode(wheelLifter, OUTPUT);
@@ -36,7 +38,7 @@ void loop() {
 void playRound(){
   gameRound newGameRound = {
     .wheelSectorCounter = 0,
-    .ballLightCount = 0,
+    .ballDetected = false,
     .sectorLengthCounter = 0,
     .isSectorCounted = false,
     .statusWinSensor = false,
@@ -46,7 +48,8 @@ void playRound(){
     .winningSector = -1,
     .winningSectorCorrectCount = 0,
     .winningNumber = -1,
-    .lastReadNumber = -1
+    .lastReadNumber = -1,
+    .ballCounter = 0
   };
   sendEvent(SNRS, -1);
   spinSlow(&wheelControl);
@@ -63,8 +66,6 @@ void playRound(){
   else {
     sendError(PSF);
   }
-  //singleDelay(20000);
-  //sensorTest();
   roundCounter++; 
 }
 
@@ -231,36 +232,36 @@ void fireBall(wheel *wheelControl, gameRound *gameRound) {
   digitalWrite(ballFan, LOW);
 }
 
-void readSector(gameRound *gameRound, unsigned long currentTime){
-  gameRound->isSectorCounted = false;
-  gameRound->sectorLengthCounter = 0;
-  gameRound->ballLightCount = 0;
-  while(digitalRead(wheelSensorPin) == 1);
-  while(!digitalRead(wheelSensorPin)){
-    if (currentTime + maxReadNumberTime < millis()){
-      sendError(ECRN);
+void readBall(gameRound *gameRound){
+  if(digitalRead(winSensorPin) == 0){
+    gameRound->ballCounter++;
+  }  
+  else{
+    if(gameRound->ballCounter > ballDetectionTimeThreshold){
+      gameRound->ballDetected = true;  
     }
-    
-    if(gameRound->sectorLengthCounter > sectorLengthThreshold) {
-      gameRound->wheelSectorCounter = 0;    
-    }
-    
-    
-    if(gameRound->isSectorCounted == false){
-      gameRound->wheelSectorCounter++;
-      gameRound->isSectorCounted = true;
-    }
-    
-    while (digitalRead(winSensorPin) == 0){
-      gameRound->ballLightCount++;
-      singleDelay(readSectorDelay);
-    }
+    gameRound->ballCounter = 0;
+  }  
+  delay(3);
+}
 
-    gameRound->sectorLengthCounter++;
-//    if(gameRound->ballLightCount > 0) {
-//      Serial.println(gameRound->sectorLengthCounter);
-//    }
+void readSector(gameRound *gameRound, unsigned long currentTime){
+  int counter = 0;
+  gameRound->ballDetected = false;
+  gameRound->isSectorCounted = false;
+  bool isWinningBall = false;
+  while(digitalRead(wheelSensorPin) == 0){
+    counter++;
+    delay(3);
   }
+  
+  if(counter > falseSignal){
+    gameRound->wheelSectorCounter++;  
+  }
+  if(counter > sectorLengthThreshold){
+    gameRound->wheelSectorCounter = 0;
+  }
+  readBall(gameRound);
 }
 
 void readNumber(gameRound *gameRound, unsigned long currentTime){
@@ -270,12 +271,9 @@ void readNumber(gameRound *gameRound, unsigned long currentTime){
     if (gameRound->wheelSectorCounter > 36 && gameRound->wheelSectorCounter % 36 == 0){
       gameRound->wheelSectorCounter = 36;
     }
-    if (gameRound->ballLightCount >= 17){
-      Serial.print("Sector: ");
-      Serial.println(gameRound->wheelSectorCounter);
-      Serial.print("Light: ");
-      Serial.println(gameRound->ballLightCount);
-      
+    if (gameRound->ballDetected){      
+      //Serial.print("Sector: ");
+      //Serial.println(gameRound->wheelSectorCounter);      
       gameRound->winningNumber = numbersArray[gameRound->wheelSectorCounter];
       successfulRead = true;
       if(gameRound->lastReadNumber == -1){
@@ -308,7 +306,7 @@ volatile void sensorTest(){
 
   int counter = 0;
   while(true){
-    while(digitalRead(wheelSensorPin) == 0){
+    while(digitalRead(winSensorPin) == 0){
     counter++;
     singleDelay(10);
 

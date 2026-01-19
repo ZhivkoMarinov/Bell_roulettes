@@ -40,6 +40,7 @@ const int minPreBetDelay = 10;
 const int maxPreBetDelay = 25;
 const int multiplier = 100;
 const int resetRoundThreshold = 10000;
+const int nextRoundAwaitTime = 2000;
 
 const int correctCountThreshold = 2;
 
