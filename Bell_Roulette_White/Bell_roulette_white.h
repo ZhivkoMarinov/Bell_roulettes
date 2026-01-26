@@ -1,5 +1,5 @@
-#ifndef BELL_ROULETTE_WHITE
-#define BELL_ROULETTE_WHITE
+#ifndef BELL_ROULETTE_BROWN_H
+#define BELL_ROULETTE_BROWN_H
 
 #include <stdbool.h>
 // Error(E) codes
@@ -22,8 +22,10 @@ const unsigned long minShuffleTime = 50;
 const unsigned long maxShuffleTime = 80;
 const int shuffleTimeMultiplier = 100;
 const unsigned int stopWheelDuration = 2900;
-const int sectorLengthThreshold = 4;
-const int readSectorDelay = 10;
+const int sectorLengthThreshold = 12;
+const int falseSignal = 2;
+const int ballDetectionTimeThreshold = 32;
+const int readSectorDelay = 5;
 const int fireBallCompressorTime = 1000;
 const int fireBallMinTime = 0;
 const int fireBallMaxTime = 30;
@@ -57,7 +59,7 @@ const int wheelLifter = 12;
 
 typedef struct gameRound {
   int wheelSectorCounter;
-  int ballLightCount;
+  bool ballDetected;
   int sectorLengthCounter;
   bool isSectorCounted;
   bool statusWinSensor;
@@ -68,6 +70,7 @@ typedef struct gameRound {
   int winningSectorCorrectCount;
   int winningNumber;
   int lastReadNumber;
+  int ballCounter;
 } gameRound;
 
 typedef struct wheelControl {
@@ -79,7 +82,7 @@ typedef struct wheelControl {
 } wheel;
 
 const int numbersArray[] = {
-    23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32, 0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5, 10
+    10, 23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32, 0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5
 };
 
 #endif

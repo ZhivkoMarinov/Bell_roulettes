@@ -66,6 +66,7 @@ void playRound(){
   else {
     sendError(PSF);
   }
+  singleDelay(2500);
   roundCounter++; 
 }
 
@@ -257,7 +258,8 @@ void readSector(gameRound *gameRound, unsigned long currentTime){
   
   if(counter > falseSignal){
     gameRound->wheelSectorCounter++;  
-  }
+  }  
+  
   if(counter > sectorLengthThreshold){
     gameRound->wheelSectorCounter = 0;
   }
