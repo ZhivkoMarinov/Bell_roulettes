@@ -22,13 +22,13 @@ const unsigned long minShuffleTime = 50;
 const unsigned long maxShuffleTime = 80;
 const int shuffleTimeMultiplier = 100;
 const unsigned int stopWheelDuration = 2900;
-const int sectorLengthThreshold = 14;
+const int sectorLengthThreshold = 18;
 const int falseSignal = 2;
-const int ballDetectionTimeThreshold = 36;
+const int ballDetectionTimeThreshold = 33;
 const int readSectorDelay = 5;
-const int fireBallCompressorTime = 1000;
+const int fireBallCompressorTime = 650;
 const int fireBallMinTime = 0;
-const int fireBallMaxTime = 30;
+const int fireBallMaxTime = 50;
 const unsigned long keepWheelUpDuration = 1800;
 const unsigned long bettingTime = 3000 + lookingForBallDuration + keepWheelUpDuration + stopWheelDuration;
 const int powerOnDelay = 2000;
@@ -82,7 +82,7 @@ typedef struct wheelControl {
 } wheel;
 
 const int numbersArray[] = {
-    23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32, 0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5, 10
+    0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5, 10, 23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32
 };
 
 #endif

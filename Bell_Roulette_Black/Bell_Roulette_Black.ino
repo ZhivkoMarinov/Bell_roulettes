@@ -1,4 +1,4 @@
-#include "Bell_roulette_brown.h"
+#include "Bell_roulette_black.h"
 
 wheel wheelControl = {
     .isWheelRotating = false,
@@ -59,7 +59,6 @@ void playRound(){
   sendEvent(SBTE, -1);
   fireBall(&wheelControl, &newGameRound);
   shuffleWheel(&wheelControl);
-  singleDelay(2000);
   result(&newGameRound);
   if (!isBall()) {
     sendEvent(SRS, newGameRound.winningNumber);
@@ -234,19 +233,17 @@ void fireBall(wheel *wheelControl, gameRound *gameRound) {
   digitalWrite(ballFan, LOW);
 }
 
-void readBall(gameRound *gameRound){
-  
+void readBall(gameRound *gameRound){  
   if(digitalRead(winSensorPin) == 0){
     gameRound->ballCounter++;
   }  
   else{
-// Observe ball signal
-//    if(gameRound->ballCounter > 0){
-//      Serial.println(gameRound->ballCounter);
-//    }
     if(gameRound->ballCounter > ballDetectionTimeThreshold){
       gameRound->ballDetected = true;  
     }
+//    if(gameRound->ballCounter > 0){
+//      Serial.println(gameRound->ballCounter);
+//    }
     gameRound->ballCounter = 0;
   }  
   delay(3);
@@ -261,6 +258,10 @@ void readSector(gameRound *gameRound, unsigned long currentTime){
     counter++;
     delay(3);
   }
+
+//  if(counter > 2){
+//    Serial.println(counter);
+//  }
   
   if(counter > falseSignal){
     gameRound->wheelSectorCounter++;  
@@ -269,6 +270,7 @@ void readSector(gameRound *gameRound, unsigned long currentTime){
   if(counter > sectorLengthThreshold){
     gameRound->wheelSectorCounter = 0;
   }
+  //Serial.println(gameRound->wheelSectorCounter); //This shows sector counting. It should count from 0 to 36
   readBall(gameRound);
 }
 
