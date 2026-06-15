@@ -244,7 +244,7 @@ void readBall(gameRound *gameRound){
 //    if(gameRound->ballCounter > 0){
 //      Serial.println(gameRound->ballCounter);
 //    }
-    if(gameRound->ballCounter > ballDetectionTimeThreshold){
+    if(gameRound->ballCounter >= ballDetectionTimeThreshold){
       gameRound->ballDetected = true;  
     }
     gameRound->ballCounter = 0;
