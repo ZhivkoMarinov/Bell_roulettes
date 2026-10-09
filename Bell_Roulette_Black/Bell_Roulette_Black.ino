@@ -6,6 +6,8 @@ wheel wheelControl = {
     .isWheelUp = false,
     .isRetrieved = false,
     .error = false,
+    .shuffleMinTime = 0,
+    .shuffleMaxTime = 0
 };
 
 int roundAttemptsToRetrieve = 0;
@@ -26,7 +28,8 @@ void setup() {
   pinMode(motorFast, OUTPUT);
   pinMode(wheelLifter, OUTPUT);
   pinMode(ballFan, OUTPUT);
-  Serial.begin(9600);
+  randomSeed(analogRead(A0));
+  Serial.begin(serialBitRate);
   setWheel(&wheelControl);
 }
 
@@ -57,6 +60,7 @@ void playRound(){
   sendEvent(SBTS, -1);
   bettingTimeFunc(&wheelControl, &newGameRound);
   sendEvent(SBTE, -1);
+  setRandomShuffleParams(&wheelControl);
   fireBall(&wheelControl, &newGameRound);
   shuffleWheel(&wheelControl);
   result(&newGameRound);
@@ -183,10 +187,15 @@ void retrieveBall(wheel *wheelControl){
   spinSlow(wheelControl);
 }
 
+void setRandomShuffleParams(wheel *wheelControl){
+  wheelControl->shuffleMinTime = random(minMinShuffleTime, minMaxShuffleTime);
+  wheelControl->shuffleMaxTime = random(maxMinShuffleTime, maxMaxShuffleTime);
+}
+
 void shuffleWheel(wheel *wheelControl){
-  long shuffleDuration = randomTime(minShuffleTime, maxShuffleTime) * shuffleTimeMultiplier;
-  //Serial.print("Shuffle randTime: ");
-  //Serial.println(shuffleDuration);
+  long shuffleDuration = randomTime(wheelControl->shuffleMinTime, wheelControl->shuffleMaxTime) * shuffleTimeMultiplier;
+  Serial.print("Shuffle randTime: ");
+  Serial.println(shuffleDuration);
   if (wheelControl->isWheelRotating){
     digitalWrite(motorFast, HIGH);
     singleDelay(shuffleDuration);
@@ -242,9 +251,9 @@ void readBall(gameRound *gameRound){
       gameRound->ballDetected = true;  
     }
 // Observe ball signal
-    if(gameRound->ballCounter > 0){
-      Serial.println(gameRound->ballCounter);
-    }
+//    if(gameRound->ballCounter > 0){
+//      Serial.println(gameRound->ballCounter);
+//    }
     gameRound->ballCounter = 0;
   }  
   delay(3);
@@ -260,9 +269,9 @@ void readSector(gameRound *gameRound, unsigned long currentTime){
     delay(3);
   }
 
-//  if(counter > 2){
-//    Serial.println(counter);
-//  }
+  //if(counter > 2){
+  //  Serial.println(counter);
+  //}
   
   if(counter > falseSignal){
     gameRound->wheelSectorCounter++;  
@@ -283,8 +292,8 @@ void readNumber(gameRound *gameRound, unsigned long currentTime){
       gameRound->wheelSectorCounter = 36;
     }
     if (gameRound->ballDetected){      
-      Serial.print("Sector: ");
-      Serial.println(gameRound->wheelSectorCounter);      
+      //Serial.print("Sector: ");
+      //Serial.println(gameRound->wheelSectorCounter);      
       gameRound->winningNumber = numbersArray[gameRound->wheelSectorCounter];
       successfulRead = true;
       if(gameRound->lastReadNumber == -1){

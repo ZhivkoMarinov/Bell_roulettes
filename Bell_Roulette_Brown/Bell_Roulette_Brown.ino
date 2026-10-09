@@ -6,6 +6,8 @@ wheel wheelControl = {
     .isWheelUp = false,
     .isRetrieved = false,
     .error = false,
+    .shuffleMinTime = 0,
+    .shuffleMaxTime = 0
 };
 
 int roundAttemptsToRetrieve = 0;
@@ -26,7 +28,8 @@ void setup() {
   pinMode(motorFast, OUTPUT);
   pinMode(wheelLifter, OUTPUT);
   pinMode(ballFan, OUTPUT);
-  Serial.begin(9600);
+  randomSeed(analogRead(A0));
+  Serial.begin(serialBitRate);
   setWheel(&wheelControl);
 }
 
@@ -57,6 +60,7 @@ void playRound(){
   sendEvent(SBTS, -1);
   bettingTimeFunc(&wheelControl, &newGameRound);
   sendEvent(SBTE, -1);
+  setRandomShuffleParams(&wheelControl);
   fireBall(&wheelControl, &newGameRound);
   shuffleWheel(&wheelControl);
   singleDelay(2000);
@@ -184,10 +188,15 @@ void retrieveBall(wheel *wheelControl){
   spinSlow(wheelControl);
 }
 
+void setRandomShuffleParams(wheel *wheelControl){
+  wheelControl->shuffleMinTime = random(minMinShuffleTime, minMaxShuffleTime);
+  wheelControl->shuffleMaxTime = random(maxMinShuffleTime, maxMaxShuffleTime);
+}
+
 void shuffleWheel(wheel *wheelControl){
-  long shuffleDuration = randomTime(minShuffleTime, maxShuffleTime) * shuffleTimeMultiplier;
-  //Serial.print("Shuffle randTime: ");
-  //Serial.println(shuffleDuration);
+  long shuffleDuration = randomTime(wheelControl->shuffleMinTime, wheelControl->shuffleMaxTime) * shuffleTimeMultiplier;
+  Serial.print("Shuffle randTime: ");
+  Serial.println(shuffleDuration);
   if (wheelControl->isWheelRotating){
     digitalWrite(motorFast, HIGH);
     singleDelay(shuffleDuration);

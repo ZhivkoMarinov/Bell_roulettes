@@ -18,13 +18,17 @@
 const unsigned long maxRetrieveTime = 10000;
 const unsigned long maxReadNumberTime = 60000;
 const unsigned long lookingForBallDuration = 10000;
-const unsigned long minShuffleTime = 41;
-const unsigned long maxShuffleTime = 96;
+
+const unsigned long minMinShuffleTime = 30;
+const unsigned long minMaxShuffleTime = 45;
+const unsigned long maxMinShuffleTime = 60;
+const unsigned long maxMaxShuffleTime = 97;
 const int shuffleTimeMultiplier = 100;
+
 const unsigned int stopWheelDuration = 2900;
-const int sectorLengthThreshold = 14;
+const int sectorLengthThreshold = 11;
 const int falseSignal = 2;
-const int ballDetectionTimeThreshold = 31;
+const int ballDetectionTimeThreshold = 40;
 const int readSectorDelay = 5;
 const int fireBallCompressorTime = 1100;
 const int fireBallMinTime = 13;
@@ -57,6 +61,8 @@ const int motorFast = 10;
 const int ballFan = 11;
 const int wheelLifter = 12;
 
+const long int serialBitRate = 9600;
+
 typedef struct gameRound {
   int wheelSectorCounter;
   bool ballDetected;
@@ -79,6 +85,8 @@ typedef struct wheelControl {
   bool isWheelUp;
   bool isRetrieved;
   bool error;
+  int shuffleMinTime;
+  int shuffleMaxTime;
 } wheel;
 
 const int numbersArray[] = {
